@@ -9,6 +9,10 @@ from pybricks.tools import print, wait, StopWatch
 from pybricks.robotics import DriveBase
 
 # Write your program here
+
+# TEST
+
+
 import ubinascii, ujson, urequests, utime, random
 oldKanyeBool = 'true'
 Key = 'zNnNwKEfdOammemzcvUawnFpJF5E7lCz_tuKGV2HUb'
