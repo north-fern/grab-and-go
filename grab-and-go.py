@@ -14,22 +14,32 @@ from pybricks.robotics import DriveBase
 
 
 import ubinascii, ujson, urequests, utime, random
+
+#for later information and possible further study, putting the API Key 
+# elsewhere (not public) might make this easier to protect it. 
+#import passwords
+#key = passwords.ni
+
 oldKanyeBool = 'true'
 Key = 'zNnNwKEfdOammemzcvUawnFpJF5E7lCz_tuKGV2HUb'
 
+## Setting up DriveBase and Sensors
 motorLeft = Motor(Port.A)
 motorRight = Motor(Port.D)
-#sensor = UltrasonicSensor(Port.S1)
+sensor = UltrasonicSensor(Port.S1)
 wheelDiam = 56
 wheelSpace = 150
 robot = DriveBase(motorLeft, motorRight, wheelDiam, wheelSpace)
-     
+
+  
 def SL_setup():
+     #SL_setup() creates the link between SystemLinkCloud and the ev3
      urlBase = "https://api.systemlinkcloud.com/nitag/v2/tags/"
      headers = {"Accept":"application/json","x-ni-api-key":Key}
      return urlBase, headers
      
 def Put_SL(Tag, Type, Value):
+     #Put_SL() takes the tag, type, and value of the tag and writes it to the website (SLC)
      urlBase, headers = SL_setup()
      urlValue = urlBase + Tag + "/values/current"
      propValue = {"value":{"type":Type,"value":Value}}
@@ -41,6 +51,7 @@ def Put_SL(Tag, Type, Value):
      return reply
 
 def Get_SL(Tag):
+     #Get_SL() takes the tag and retrieves the value from SystemLink
      urlBase, headers = SL_setup()
      urlValue = urlBase + Tag + "/values/current"
      try:
@@ -54,6 +65,7 @@ def Get_SL(Tag):
      return result
      
 def Create_SL(Tag, Type):
+     # Create_SL() creates a new tag on SystemLink
      urlBase, headers = SL_setup()
      urlTag = urlBase + Tag
      propName={"type":Type,"path":Tag}
@@ -79,25 +91,28 @@ def getKanye():
 
 def NewKanye(oldKanyeBool):
      KanyeBool = Get_SL('newKanye')
-     print(type(KanyeBool))
-     print(KanyeBool)
-     print(oldKanyeBool)
+     #print(type(KanyeBool))
+     #print(KanyeBool)
+     #print(oldKanyeBool)
      if KanyeBool != oldKanyeBool:
           newquote = getKanye()
           formatting = newquote.split()
-          print(formatting)
-          print(len(formatting))
+          #print(formatting)
+          #print(len(formatting))
           j = 0
           newtext = ''
-          if len(formatting)%2 == 1:
+          if len(formatting)%3 == 1:
                formatting.append('')
-          for i in range(0, len(formatting)/2):
-               print(formatting[2*i] + ' ' + formatting[2*i+1])
-               brick.display.text(formatting[2*i] + ' ' + formatting[2*i+1])
+          else if len(formatting)%3 == 2:
+               formatting.append('')
+               formatting.append('')
+          for i in range(0, len(formatting)/3):
+               brick.display.text(formatting[3*i] + ' ' + formatting[3*i+1] + ' ' + formatting[3*i+2])
+               newtext[i] = formatting[3*i] + ' ' + formatting[3*i+1] + ' ' + formatting[3*i+2] + '\n'
                wait(300)
           Put_SL('KanyeQuote', 'STRING', newtext)
           oldKanyeBool = KanyeBool
-          brick.display.text(newtext)
+          #brick.display.text(newtext)
 
 
 while True:
@@ -110,9 +125,9 @@ while True:
     # run motor at speed
     robot.drive(int(motorSpeed), -1*int(motorTurning))
     # read data from sensor
-    #sensorVal = sensor.distance()
+    sensorVal = sensor.distance()
     # write data from sensor to dashboard
-    #Put_SL('Distance2', 'INT', str(sensorVal))
+    Put_SL('Distance2', 'INT', str(sensorVal))
     NewKanye(oldKanyeBool)
 
      
