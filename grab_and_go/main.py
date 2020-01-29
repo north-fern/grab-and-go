@@ -119,8 +119,8 @@ def NewKanye(oldKanyeBool):
 
 
 SPEED = 30
-TARGETANGLE = 40
-
+TARGETANGLE = 60
+emergencyStop = 'false'
 #clamp.run_target(30, 40)
 while True:
     # check speed
@@ -130,22 +130,23 @@ while True:
     motorTurning = Get_SL('motorTurning')
     #print(type(motorTurning))
     # run motor at speed
-    robot.drive(int(motorSpeed), int(motorTurning))
+    robot.drive(int(motorSpeed), 
+    int(motorTurning))
     # read data from sensor
     sensorVal = sensor.distance()
-    print(sensorVal)
+    #print(sensorVal)
     # write data from sensor to dashboard
     #Put_SL('Distance2', 'INT', str(sensorVal))
-    if sensorVal <= 180:
-         clamp.run_target(SPEED, -TARGETANGLE)
-    
-    emergencyStop = Get_SL('emergencyStop')
-    
+    #if sensorVal <= 180:
+        #clamp.run_target(SPEED, -TARGETANGLE)
+        #break
+    #emergencyStop = Get_SL('emergencyStop')
     if emergencyStop == 'true':
-          clamp.run_target(2*SPEED, TARGETANGLE)
-          emergencyStop = 'false'
-          Put_SL('emergencyStop', 'BOOLEAN', emergencyStop)
-    NewKanye(oldKanyeBool)
+        clamp.run_target(2*SPEED, TARGETANGLE)
+        #Put_SL('emergencyStop', 'BOOLEAN', emergencyStop)
+    #else:
+      #  clamp.run_target(2*SPEED, -TARGETANGLE)
+    #NewKanye(oldKanyeBool)
 
      
 
