@@ -20,13 +20,12 @@ import ubinascii, ujson, urequests, utime, random
 #import passwords
 #key = passwords.ni
 
-oldKanyeBool = 'true'
+oldKanyeBool = 0
 Key = 'zNnNwKEfdOammemzcvUawnFpJF5E7lCz_tuKGV2HUb'
 
 ## Setting up DriveBase and Sensors
 motorLeft = Motor(Port.A)
 motorRight = Motor(Port.D)
-sensor = UltrasonicSensor(Port.S1)
 clamp = Motor(Port.B)
 wheelDiam = 56
 wheelSpace = 150
@@ -91,12 +90,9 @@ def getKanye():
 
 
 def NewKanye(oldKanyeBool):
-     KanyeBool = Get_SL('newKanye')
-     #print(type(KanyeBool))
-     #print(KanyeBool)
-     #print(oldKanyeBool)
-     
-     if KanyeBool != oldKanyeBool:
+     KanyeBool = int(Get_SL('newQuote'))
+     print('kanye bool: ' + str(KanyeBool))
+     if KanyeBool == 1:
           newquote = getKanye()
           formatting = newquote.split()
           #print(formatting)
@@ -112,16 +108,15 @@ def NewKanye(oldKanyeBool):
                brick.display.text(formatting[3*i] + ' ' + formatting[3*i+1] + ' ' + formatting[3*i+2])
                #newtext[i] = formatting[3*i] + ' ' + formatting[3*i+1] + ' ' + formatting[3*i+2] + '\n'
                #wait(300)
-          Put_SL('KanyeQuote', 'STRING', newquote)
-          oldKanyeBool = KanyeBool
+          #Put_SL('KanyeQuote', 'STRING', newquote)
           
           #brick.display.text(newtext)
 
 
-SPEED = 30
-TARGETANGLE = 60
-emergencyStop = 'false'
-#clamp.run_target(30, 40)
+SPEED = 60
+TARGETANGLE = 1000
+already_done = 1
+
 while True:
     # check speed
     motorSpeed = Get_SL('motorSpeed')
@@ -130,23 +125,17 @@ while True:
     motorTurning = Get_SL('motorTurning')
     #print(type(motorTurning))
     # run motor at speed
-    robot.drive(int(motorSpeed), 
-    int(motorTurning))
-    # read data from sensor
-    sensorVal = sensor.distance()
-    #print(sensorVal)
-    # write data from sensor to dashboard
-    #Put_SL('Distance2', 'INT', str(sensorVal))
-    #if sensorVal <= 180:
-        #clamp.run_target(SPEED, -TARGETANGLE)
-        #break
-    #emergencyStop = Get_SL('emergencyStop')
-    if emergencyStop == 'true':
-        clamp.run_target(2*SPEED, TARGETANGLE)
-        #Put_SL('emergencyStop', 'BOOLEAN', emergencyStop)
-    #else:
-      #  clamp.run_target(2*SPEED, -TARGETANGLE)
-    #NewKanye(oldKanyeBool)
+    robot.drive(int(motorSpeed), int(motorTurning))
+
+    emergencyStop = int(Get_SL('clampOpen'))
+    print('emergency stop triggered?' + str(emergencyStop))
+    if emergencyStop == 1 and already_done == 0: #OPEN
+        clamp.run_time(2*SPEED, TARGETANGLE)
+        already_done = 1
+    elif emergencyStop == 0 and already_done == 1: #CLOSED
+       clamp.run_time(-2*SPEED, TARGETANGLE)
+       already_done = 0
+    NewKanye(oldKanyeBool)
 
      
 
