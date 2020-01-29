@@ -95,6 +95,7 @@ def NewKanye(oldKanyeBool):
      #print(type(KanyeBool))
      #print(KanyeBool)
      #print(oldKanyeBool)
+     
      if KanyeBool != oldKanyeBool:
           newquote = getKanye()
           formatting = newquote.split()
@@ -104,21 +105,23 @@ def NewKanye(oldKanyeBool):
           newtext = ''
           if len(formatting)%3 == 1:
                formatting.append('')
-          else if len(formatting)%3 == 2:
                formatting.append('')
+          elif len(formatting)%3 == 2:
                formatting.append('')
           for i in range(0, len(formatting)/3):
                brick.display.text(formatting[3*i] + ' ' + formatting[3*i+1] + ' ' + formatting[3*i+2])
-               newtext[i] = formatting[3*i] + ' ' + formatting[3*i+1] + ' ' + formatting[3*i+2] + '\n'
-               wait(300)
-          Put_SL('KanyeQuote', 'STRING', newtext)
+               #newtext[i] = formatting[3*i] + ' ' + formatting[3*i+1] + ' ' + formatting[3*i+2] + '\n'
+               #wait(300)
+          Put_SL('KanyeQuote', 'STRING', newquote)
           oldKanyeBool = KanyeBool
+          
           #brick.display.text(newtext)
 
 
 SPEED = 30
-TARGETANGLE = 10
+TARGETANGLE = 40
 
+#clamp.run_target(30, 40)
 while True:
     # check speed
     motorSpeed = Get_SL('motorSpeed')
@@ -130,18 +133,22 @@ while True:
     robot.drive(int(motorSpeed), -1*int(motorTurning))
     # read data from sensor
     sensorVal = sensor.distance()
+    print(sensorVal)
     # write data from sensor to dashboard
     #Put_SL('Distance2', 'INT', str(sensorVal))
-    if sensorVal <= 30:
-         clamp.run_target(SPEED, TARGETANGLE)
-     emergencyStop = Get_SL('emergencyStop')
-     if emergencyStop == 'true':
+    if sensorVal <= 180:
+         clamp.run_target(SPEED, -TARGETANGLE)
+    
+    emergencyStop = Get_SL('emergencyStop')
+    
+    if emergencyStop == 'true':
           clamp.run_target(2*SPEED, TARGETANGLE)
           emergencyStop = 'false'
           Put_SL('emergencyStop', 'BOOLEAN', emergencyStop)
     NewKanye(oldKanyeBool)
 
      
+
 
 
 
