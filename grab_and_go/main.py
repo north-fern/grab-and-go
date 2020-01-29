@@ -130,7 +130,7 @@ while True:
     motorTurning = Get_SL('motorTurning')
     #print(type(motorTurning))
     # run motor at speed
-    robot.drive(int(motorSpeed), -1*int(motorTurning))
+    robot.drive(int(motorSpeed), int(motorTurning))
     # read data from sensor
     sensorVal = sensor.distance()
     print(sensorVal)
